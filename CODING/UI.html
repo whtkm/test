@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Toko Retail Online</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            transition: background-color 0.5s;
+        }
+        .login-panel {
+            background-color: #fff;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            border-radius: 8px;
+            width: 300px;
+            text-align: center;
+            transition: opacity 0.5s;
+        }
+        .login-panel h2 {
+            margin-bottom: 20px;
+            color: #333;
+        }
+        .login-panel input[type="text"], 
+        .login-panel input[type="password"] {
+            width: calc(100% - 40px);
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            outline: none;
+        }
+        .login-panel input[type="submit"] {
+            width: calc(100% - 40px);
+            padding: 10px;
+            background-color: #4CAF50;
+            border: none;
+            color: white;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .login-panel input[type="submit"]:hover {
+            background-color: #45a049;
+        }
+        .error-message {
+            color: red;
+            margin-top: 10px;
+        }
+        .retail-background {
+            background-image: url('bbb.jpg'); /* Ganti dengan gambar latar belakang toko retail */
+            background-size: cover;
+            background-position: center;
+        }
+        .store-content {
+            text-align: center;
+            padding: 20px;
+            display: none; /* Awalnya disembunyikan */
+            max-width: 800px;
+            margin: 0 auto;
+            overflow-y: auto;
+            max-height: calc(100vh - 200px); /* Ukuran maksimum tinggi konten, disesuaikan dengan tinggi viewport */
+        }
+        .store-content.show {
+            display: block; /* Ditampilkan setelah login berhasil */
+        }
+        .product-wrapper {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+        }
+        .product {
+            width: calc(20% - 20px); /* Lebar produk 20% dari lebar parent dengan margin 20px */
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            padding: 10px;
+            border-radius: 8px;
+            background-color: #fff;
+            box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.2);
+            text-align: left;
+        }
+        .product img {
+            max-width: 100%;
+            height: auto;
+            margin-bottom: 10px;
+        }
+        .product-info {
+            margin-top: 10px;
+        }
+        .product-price {
+            font-weight: bold;
+            color: #333;
+        }
+        .add-to-cart {
+            margin-top: 10px;
+        }
+        .quantity-selector {
+            width: 50px;
+            padding: 5px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            margin-right: 5px;
+            text-align: center;
+        }
+        .cart {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: #fff;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.2);
+            display: none; /* Awalnya disembunyikan */
+        }
+        .cart ul {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+        }
+        .cart-item {
+            margin-bottom: 10px;
+            border-bottom: 1px solid #ccc;
+            padding-bottom: 10px;
+        }
+        .cart-item-details {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .cart-item-buttons {
+            display: flex;
+            gap: 10px;
+        }
+        .cart-item-price {
+            font-size: 14px;
+            color: #777;
+        }
+        .cart-total {
+            font-weight: bold;
+            margin-top: 10px;
+        }
+        .cart-item-actions {
+            margin-top: 5px;
+        }
+        .send-to-whatsapp-btn {
+            background-color: #25D366;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            display: flex;
+            align-items: center;
+            margin-top: 20px;
+            justify-content: center;
+            text-decoration: none;
+            text-align: center;
+        }
+        .send-to-whatsapp-btn img {
+            width: 20px;
+            margin-right: 10px;
+        }
+        .send-to-whatsapp-btn:hover {
+            background-color: #128C7E;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-panel" id="loginPanel">
+        <h2>Login</h2>
+        <form id="loginForm">
+            <input type="text" id="username" name="username" placeholder="Username" required>
+            <br>
+            <input type="password" id="password" name="password" placeholder="Password" required>
+            <br>
+            <input type="submit" value="Login">
+        </form>
+        <p id="errorMessage" class="error-message"></p>
+    </div>
+
+    <div class="store-content" id="storeContent">
+        <h2>Selamat Datang di Toko Online Kami!</h2>
+
+        <div class="product-wrapper">
+            <div class="product">
+                <img src="pepsi.jpg" alt="Pepsi">
+                <div class="product-info">
+                    <p class="product-price">Rp 5.000</p>
+                    <div class="add-to-cart">
+                        <input type="number" class="quantity-selector" value="1" min="1" max="100">
+                        <button class="add-to-cart-btn">Add to Cart</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="product">
+                <img src="fanta.jpg" alt="Fanta">
+                <div class="product-info">
+                    <p class="product-price">Rp 5.000</p>
+                    <div class="add-to-cart">
+                        <input type="number" class="quantity-selector" value="1" min="1" max="100">
+                        <button class="add-to-cart-btn">Add to Cart</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="product">
+                <img src="fantas.jpg" alt="Sprite">
+                <div class="product-info">
+                    <p class="product-price">Rp 6.000</p>
+                    <div class="add-to-cart">
+                        <input type="number" class="quantity-selector" value="1" min="1" max="100">
+                        <button class="add-to-cart-btn">Add to Cart</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tambahkan lebih banyak produk di sini -->
+            
+        </div>
+
+    </div>
+
+    <div class="cart" id="cart">
+        <h3>Keranjang Belanja</h3>
+        <ul id="cartItems">
+            <!-- Item keranjang akan ditambahkan melalui JavaScript -->
+        </ul>
+        <p class="cart-total">Total: <span id="cartTotal">Rp 0</span></p>
+        <button class="send-to-whatsapp-btn" onclick="sendToWhatsApp()">
+            <img src="whatsapp.png" alt="WhatsApp Icon">
+            Kirimkan Barang
+        </button>
+    </div>
+
+    <script>
+        var cart = []; // Array untuk menyimpan produk yang sudah dipesan
+        var totalPrice = 0; // Total harga belanjaan
+
+        // Fungsi untuk menambahkan item ke keranjang
+        function addToCart(productName, price, quantity) {
+            var itemExists = false;
+            // Cari apakah produk sudah ada di keranjang
+            cart.forEach(function(item) {
+                if (item.productName === productName) {
+                    item.quantity += quantity;
+                    itemExists = true;
+                }
+            });
+
+            // Jika produk belum ada di keranjang, tambahkan sebagai item baru
+            if (!itemExists) {
+                cart.push({
+                    productName: productName,
+                    price: price,
+                    quantity: quantity
+                });
+            }
+
+            // Hitung total harga belanjaan
+            calculateTotal();
+            // Perbarui tampilan keranjang
+            displayCart();
+        }
+
+        // Fungsi untuk menghitung total harga belanjaan
+        function calculateTotal() {
+            totalPrice = 0;
+            cart.forEach(function(item) {
+                totalPrice += item.price * item.quantity;
+            });
+        }
+
+        // Fungsi untuk menampilkan isi keranjang belanja
+        function displayCart() {
+            var cartItemsElement = document.getElementById("cartItems");
+            cartItemsElement.innerHTML = "";
+
+            cart.forEach(function(item) {
+                var listItem = document.createElement("li");
+                listItem.classList.add("cart-item");
+
+                var itemDetails = document.createElement("div");
+                itemDetails.classList.add("cart-item-details");
+
+                var itemName = document.createElement("span");
+                itemName.textContent = `${item.productName} x${item.quantity}`;
+                itemDetails.appendChild(itemName);
+
+                var itemPrice = document.createElement("span");
+                itemPrice.textContent = `SATUAN: Rp ${item.price.toLocaleString()} x ${item.quantity} ( Rp ${(item.price * item.quantity).toLocaleString()} )`;
+                itemPrice.classList.add("cart-item-price");
+                itemDetails.appendChild(itemPrice);
+
+                var itemActions = document.createElement("div");
+                itemActions.classList.add("cart-item-actions");
+
+                var reduceButton = document.createElement("button");
+                reduceButton.textContent = "Kurangi";
+                reduceButton.classList.add("reduce-btn");
+                reduceButton.addEventListener("click", function() {
+                    reduceCartItem(item.productName);
+                });
+                itemActions.appendChild(reduceButton);
+
+                var removeButton = document.createElement("button");
+                removeButton.textContent = "Hapus";
+                removeButton.classList.add("remove-btn");
+                removeButton.addEventListener("click", function() {
+                    removeCartItem(item.productName);
+                });
+                itemActions.appendChild(removeButton);
+
+                itemDetails.appendChild(itemActions);
+                listItem.appendChild(itemDetails);
+
+                cartItemsElement.appendChild(listItem);
+            });
+
+            // Tampilkan total harga belanjaan
+            var cartTotalElement = document.getElementById("cartTotal");
+            cartTotalElement.textContent = `Rp ${totalPrice.toLocaleString()}`;
+        }
+
+        // Fungsi untuk mengurangi jumlah produk dalam keranjang
+        function reduceCartItem(productName) {
+            cart.forEach(function(item, index) {
+                if (item.productName === productName) {
+                    item.quantity--;
+                    if (item.quantity === 0) {
+                        cart.splice(index, 1); // Hapus item jika jumlahnya menjadi 0
+                    }
+                }
+            });
+            // Hitung ulang total harga belanjaan dan tampilkan kembali keranjang
+            calculateTotal();
+            displayCart();
+        }
+
+        // Fungsi untuk menghapus produk dari keranjang
+        function removeCartItem(productName) {
+            cart = cart.filter(function(item) {
+                return item.productName !== productName;
+            });
+            // Hitung ulang total harga belanjaan dan tampilkan kembali keranjang
+            calculateTotal();
+            displayCart();
+        }
+
+        // Menangani tombol "Add to Cart" di setiap produk
+        var addToCartButtons = document.querySelectorAll(".add-to-cart-btn");
+        addToCartButtons.forEach(function(button, index) {
+            button.addEventListener("click", function() {
+                var productElement = this.closest(".product");
+                var productName = productElement.querySelector("img").alt;
+                var productPriceText = productElement.querySelector(".product-price").textContent;
+                var productPrice = parseInt(productPriceText.replace("Rp ", "").replace(".", "").replace(",", ""));
+                var quantity = parseInt(productElement.querySelector(".quantity-selector").value);
+
+                // Tambahkan produk ke keranjang
+                addToCart(productName, productPrice, quantity);
+            });
+        });
+
+        // Fungsi untuk menampilkan konten setelah login
+        function showStoreContent() {
+            document.body.classList.add("retail-background");
+            document.getElementById("loginPanel").style.display = "none";
+            document.getElementById("storeContent").classList.add("show");
+            document.getElementById("cart").style.display = "block"; // Tampilkan keranjang belanja setelah login
+        }
+
+        // Menangani submit form login
+        document.getElementById("loginForm").addEventListener("submit", function(event) {
+            event.preventDefault();
+            var username = document.getElementById("username").value;
+            var password = document.getElementById("password").value;
+
+            // Periksa apakah username dan password sesuai
+            if (username === "VdinsGames" && password === "AGUS") {
+                // Tampilkan konten toko setelah login berhasil
+                showStoreContent();
+            } else {
+                // Tampilkan pesan error dan tutup jendela setelah 2 detik
+                document.getElementById("errorMessage").innerText = "Username atau password salah. Pecundang!";
+                setTimeout(function() {
+                    window.close();
+                }, 2000);
+            }
+        });
+
+        // Fungsi untuk mengirimkan total belanja ke WhatsApp
+        function sendToWhatsApp() {
+            var message = `Halo, saya ingin memesan barang sebagai berikut:\n`;
+            cart.forEach(function(item) {
+                message += `${item.productName} x${item.quantity} SATUAN: Rp ${item.price.toLocaleString()} x ${item.quantity} ( Rp ${(item.price * item.quantity).toLocaleString()} )\n`;
+            });
+            message += `\nTotal: Rp ${totalPrice.toLocaleString()}\n\nTerima kasih.`;
+            var phoneNumber = "+6283895152817";
+            var url = `https://api.whatsapp.com/send?phone=${phoneNumber}&text=${encodeURIComponent(message)}`;
+
+            // Buka halaman WhatsApp dengan pesan yang sudah diisi
+            window.open(url, '_blank');
+        }
+    </script>
+</body>
+</html>
